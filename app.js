@@ -12,7 +12,7 @@ const indexRouter = require("./src/routes/index.routes");
 const authRouter = require("./src/routes/auth.routes.js");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT;
 
 connect();
 botListiner();
@@ -76,6 +76,6 @@ app.use((req, res, next) => {
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
 
-app.listen(PORT, () => {
+app.listen(PORT || 3000, () => {
 	console.log("Server has been started on port: ", PORT);
 });
