@@ -53,10 +53,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(sessionParser);
 
-if (process.env.DEV) {
-	const morgan = require("morgan");
-	app.use(morgan("dev"));
-}
+// if (process.env.DEV) {
+// 	const morgan = require("morgan");
+// 	app.use(morgan("dev"));
+// }
 
 app.use((req, res, next) => {
 	if (req.session.user?.userName) {
@@ -76,6 +76,6 @@ app.use((req, res, next) => {
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
 
-app.listen(PORT || 3000, () => {
+app.listen(process.env.PORT || 3000, () => {
 	console.log("Server has been started on port: ", PORT);
 });
