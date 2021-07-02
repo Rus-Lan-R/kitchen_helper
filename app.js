@@ -106,7 +106,7 @@ server.on("upgrade", (request, socket, head) => {
 
 wss.on("connection", (ws, request) => {
 	const {
-		user: { id, name },
+		user: { id, userName: name },
 	} = request.session;
 
 	map.set(id, ws);

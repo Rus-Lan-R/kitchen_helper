@@ -66,7 +66,6 @@ const botListiner = async () => {
 					try {
 						const chatId = msg.chat.id;
 						const resp = match[1]; // the captured "whatever"
-						console.log(resp);
 
 						response = await client.search({ healthlabel: `${resp}` });
 						// send back the matched "whatever" to the chat
@@ -119,7 +118,6 @@ const botListiner = async () => {
 			removeHisKeyboard(query);
 		} else {
 			currentRecipe = query.data;
-			console.log(response.hits[currentRecipe].recipe);
 			bot.sendMessage(chatId, makeRecipeMessage(response.hits[currentRecipe].recipe), {
 				reply_markup: {
 					resize_keyboard: true,
