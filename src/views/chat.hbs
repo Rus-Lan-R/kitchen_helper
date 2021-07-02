@@ -5,6 +5,8 @@
 	<ul data-chatWr>
 		{{#each allMessages}}
 			<li>
+				{{this.authorID.name}}
+				->
 				{{this.message}}
 			</li>
 		{{/each}}

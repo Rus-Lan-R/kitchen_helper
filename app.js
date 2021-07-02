@@ -14,6 +14,7 @@ const { botListiner } = require("./src/bot/bot");
 const indexRouter = require("./src/routes/index.routes");
 const authRouter = require("./src/routes/auth.routes");
 const chatRouter = require("./src/routes/chat.routes");
+const Chat = require("./src/model/chat.model");
 
 const app = express();
 
@@ -129,8 +130,9 @@ wss.on("connection", (ws, request) => {
 				break;
 
 			case "CHAT_MESSAGE":
-				map.forEach((client, key) => {
+				map.forEach(async (client, key) => {
 					if (client.readyState === WebSocket.OPEN) {
+						await Chat.create({ message: parsedMessage.payload, authorID: id });
 						client.send(
 							JSON.stringify({
 								type: parsedMessage.type,
@@ -159,7 +161,3 @@ wss.on("connection", (ws, request) => {
 server.listen(process.env.PORT, () => {
 	console.log("Server has been started on port: ", process.env.PORT);
 });
-
-// app.listen(process.env.PORT || 3000, () => {
-// 	console.log("Server has been started on port: ", PORT);
-// });
