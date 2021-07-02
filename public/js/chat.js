@@ -9,6 +9,7 @@ socket.onopen = function (e) {
 	);
 
 	const chatWr = document.querySelector("[data-chatwr]");
+	const userConnected = document.querySelector("[data-users]");
 
 	socket.onmessage = function (event) {
 		const parsedMessage = JSON.parse(event.data);
@@ -17,6 +18,7 @@ socket.onopen = function (e) {
 			case "CHAT_CONNECT":
 				console.log("CHAT_CONNECT");
 				console.log(parsedMessage.payload);
+				userConnected.insertAdjacentHTML("afterend", `<div>${parsedMessage.payload}</div>`);
 
 				break;
 			case "CHAT_MESSAGE":
