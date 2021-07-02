@@ -1,0 +1,16 @@
+<div class="chat">
+	<ul data-chatWr>
+		{{#each allMessages}}
+			<li>
+				{{this.message}}
+			</li>
+		{{/each}}
+	</ul>
+</div>
+
+<form name="message">
+	<input type="text" name="message" placeholder="Type message here..." />
+	<button>Send</button>
+</form>
+
+<script scr="/js/chat.js"></script>

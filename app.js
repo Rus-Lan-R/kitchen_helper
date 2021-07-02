@@ -1,6 +1,9 @@
 const express = require("express");
 const session = require("express-session");
 
+const http = require("http");
+const WebSocket = require("ws");
+
 const MongoStore = require("connect-mongo");
 const hbs = require("hbs");
 const path = require("path");
@@ -9,13 +12,15 @@ const { connect, dbConnectionURL } = require("./src/config/db");
 const { botListiner } = require("./src/bot/bot");
 
 const indexRouter = require("./src/routes/index.routes");
-const authRouter = require("./src/routes/auth.routes.js");
+const authRouter = require("./src/routes/auth.routes");
+const chatRouter = require("./src/routes/chat.routes");
 
 const app = express();
-const PORT = process.env.PORT;
 
 connect();
 botListiner();
+
+const map = new Map();
 
 const sessionParser = session({
 	secret: process.env.SESSION_SECRET,
@@ -67,15 +72,94 @@ app.use((req, res, next) => {
 	next();
 });
 
-// const checkAuthUser = (req, res, next) => {
-// 	console.log("check", req.session.user);
-// 	if (!req.session?.user) res.redirect("/auth/signup");
-// 	next();
-// };
+const checkAuthUser = (req, res, next) => {
+	console.log("check", req.session.user);
+	if (!req.session?.user) res.redirect("/auth/signup");
+	next();
+};
 
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
+app.use("/chat", checkAuthUser, chatRouter);
 
-app.listen(process.env.PORT || 3000, () => {
-	console.log("Server has been started on port: ", PORT);
+const server = http.createServer(app);
+
+const wss = new WebSocket.Server({ clientTracking: false, noServer: true });
+
+server.on("upgrade", (request, socket, head) => {
+	console.log("Parsing session from request...");
+
+	sessionParser(request, {}, () => {
+		if (!request.session.user?.id) {
+			socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
+			socket.destroy();
+			return;
+		}
+
+		console.log("Session is parsed!");
+
+		wss.handleUpgrade(request, socket, head, (ws) => {
+			wss.emit("connection", ws, request);
+		});
+	});
 });
+
+wss.on("connection", (ws, request) => {
+	const {
+		user: { id, name },
+	} = request.session;
+
+	map.set(id, ws);
+
+	ws.on("message", (message) => {
+		const parsedMessage = JSON.parse(message);
+
+		switch (parsedMessage.type) {
+			case "CHAT_CONNECT":
+				map.forEach((client) => {
+					if (client.readyState === WebSocket.OPEN) {
+						client.send(
+							JSON.stringify({
+								type: parsedMessage.type,
+								payload: `${name} присоединился к чату`,
+							}),
+						);
+					}
+				});
+				break;
+
+			case "CHAT_MESSAGE":
+				map.forEach((client, key) => {
+					if (client.readyState === WebSocket.OPEN) {
+						client.send(
+							JSON.stringify({
+								type: parsedMessage.type,
+								payload: {
+									name,
+									message: parsedMessage.payload,
+									isIam: key === id,
+								},
+							}),
+						);
+					}
+				});
+				break;
+			default:
+				break;
+		}
+
+		console.log(`Received message ${message} from user ${id}`);
+	});
+
+	ws.on("close", () => {
+		map.delete(id);
+	});
+});
+
+server.listen(process.env.PORT, () => {
+	console.log("Server has been started on port: ", process.env.PORT);
+});
+
+// app.listen(process.env.PORT || 3000, () => {
+// 	console.log("Server has been started on port: ", PORT);
+// });
