@@ -1,0 +1,36 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	<div class="container-fluid">
+		<a class="navbar-brand" href="/">Podpiski</a>
+		<button
+			class="navbar-toggler"
+			type="button"
+			data-bs-toggle="collapse"
+			data-bs-target="#navbarNav"
+			aria-controls="navbarNav"
+			aria-expanded="false"
+			aria-label="Toggle navigation"
+		>
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNav">
+			<ul class="navbar-nav">
+				{{#if userName}}
+					<li class="nav-item">
+						<a class="nav-link" href="/subscribe">{{userName}}</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="/auth/signout">Sign out</a>
+					</li>
+				{{else}}
+					<li class="nav-item">
+						<a class="nav-link" href="/auth/signup">Sign up</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="/auth/signin">Sign in</a>
+					</li>
+				{{/if}}
+
+			</ul>
+		</div>
+	</div>
+</nav>
