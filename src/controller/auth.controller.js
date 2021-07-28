@@ -16,7 +16,6 @@ const authSignup = async (req, res) => {
 			email,
 			pass,
 			name,
-			plainPass,
 		});
 
 		req.session.user = {

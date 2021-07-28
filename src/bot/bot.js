@@ -78,9 +78,6 @@ const botListiner = async () => {
 					} catch (error) {
 						bot.sendMessage(chatId, `Not Found ${match[1]}`);
 					}
-					// 'msg' is the received Message from Telegram
-					// 'match' is the result of executing the regexp above on the text content
-					// of the message
 				});
 				break;
 
@@ -106,7 +103,6 @@ const botListiner = async () => {
 		}
 	});
 
-	// После инициализации бота, задать обработчик
 	bot.on("callback_query", (query) => {
 		// console.log("query === >>> ", response.hits[query.data].recipe);
 		const chatId = query.message.chat.id;
