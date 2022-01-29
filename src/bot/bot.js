@@ -41,9 +41,9 @@ const botListiner = async () => {
     if (arrText[0] === "/id") {
       arrText.splice(0, 1);
       let text = arrText.join(" ");
-      console.log(`${text} sended to id 401035846`);
+      console.log(`${text} sended to id 1367168810 `); // 401035846 
 
-      bot.sendMessage(401035846, `${text}`);
+      bot.sendMessage(1367168810, `${text}`);
     }
     switch (msg.text) {
       case "/start":
